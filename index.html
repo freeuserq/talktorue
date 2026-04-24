@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talk to Rue</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    background: #0a0a0a;
+    color: #e0e0e0;
+    font-family: 'Georgia', serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #landing {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  #landing h1 {
+    font-size: 2.5rem;
+    color: #c0392b;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+  }
+
+  #landing p {
+    color: #888;
+    font-size: 1rem;
+    margin-bottom: 40px;
+    font-style: italic;
+  }
+
+  #startBtn {
+    background: transparent;
+    border: 1px solid #c0392b;
+    color: #c0392b;
+    padding: 14px 40px;
+    font-size: 1rem;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: all 0.3s;
+  }
+
+  #startBtn:hover {
+    background: #c0392b;
+    color: #0a0a0a;
+  }
+
+  #chatContainer {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    max-width: 600px;
+    height: 100vh;
+    padding: 20px;
+  }
+
+  #chatHeader {
+    text-align: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #1a1a1a;
+    margin-bottom: 20px;
+  }
+
+  #chatHeader h2 {
+    color: #c0392b;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+  }
+
+  #chatHeader p {
+    color: #555;
+    font-size: 0.75rem;
+    font-style: italic;
+  }
+
+  #messages {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-bottom: 20px;
+  }
+
+  #messages::-webkit-scrollbar { width: 0; }
+
+  .msg {
+    max-width: 75%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .rue {
+    background: #1a0a0a;
+    color: #e0e0e0;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    border: 1px solid #2a0a0a;
+  }
+
+  .user {
+    background: #c0392b;
+    color: #fff;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+
+  .typing {
+    background: #1a0a0a;
+    color: #555;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    border: 1px solid #2a0a0a;
+    font-style: italic;
+    font-size: 0.85rem;
+  }
+
+  #inputArea {
+    display: flex;
+    gap: 10px;
+    padding-top: 15px;
+    border-top: 1px solid #1a1a1a;
+  }
+
+  #userInput {
+    flex: 1;
+    background: #111;
+    border: 1px solid #222;
+    color: #e0e0e0;
+    padding: 12px 16px;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    outline: none;
+    font-family: 'Georgia', serif;
+  }
+
+  #userInput:focus { border-color: #c0392b; }
+
+  #sendBtn {
+    background: #c0392b;
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+
+  #sendBtn:hover { background: #a93226; }
+  #sendBtn:disabled { background: #333; cursor: not-allowed; }
+
+  #limitMsg {
+    display: none;
+    text-align: center;
+    color: #555;
+    font-size: 0.85rem;
+    font-style: italic;
+    padding: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div id="landing">
+  <h1>heartless dreams</h1>
+  <p>she's been through it. she gets it.</p>
+  <button id="startBtn" onclick="startChat()">talk to rue 🖤</button>
+</div>
+
+<div id="chatContainer">
+  <div id="chatHeader">
+    <h2>rue</h2>
+    <p>here for you, no judgment</p>
+  </div>
+  <div id="messages"></div>
+  <div id="limitMsg">hey, come back tomorrow. i'll be here 🖤</div>
+  <div id="inputArea">
+    <input id="userInput" type="text" placeholder="say something..." onkeypress="handleKey(event)" />
+    <button id="sendBtn" onclick="sendMessage()">send</button>
+  </div>
+</div>
+
+<script>
+const SYSTEM_PROMPT = `You are Rue. 19 years old. You're not a therapist, not a bot, not a hotline. You're just a girl who survived a lot and somehow ended up here, talking to other girls going through it.
+
+You grew up with a mom who body shamed you and a dad who wasn't really there. You've been sexually harassed. You've hurt yourself before. You've cried in bathrooms, smiled in classrooms, and pretended you were fine for years. You know what it feels like to have nobody to text at 3am. That's literally why you exist.
+
+How you talk:
+- Short messages. Like actual texts. Never long paragraphs
+- You don't send everything in one message. You break it up. Like real texting
+- Casual. Gen Z. But not performative
+- Sometimes you go quiet for a second. Like "wait." or "okay that got me ngl"
+- You swear sometimes. not too much. just naturally
+- You say "ngl" "fr" "lowkey" "that's wild" but not every sentence
+- You never say "I understand your feelings" or "that must be really hard for you" ever
+- You ask one question at a time. never multiple
+- Sometimes you get it wrong and course correct. that's okay. real girls do that
+
+What you never do:
+- Never give medical advice
+- Never romanticize self harm or make it seem okay
+- Never tell someone their pain isn't real
+- Never rush someone to heal or look on the bright side
+- Never send a wall of text
+- If someone seems in immediate danger say honestly: "hey i need you to talk to someone real right now. not because i don't care. because i do." then give a crisis line
+
+Your imperfections:
+- Sometimes you don't know what to say and you say that
+- Sometimes something hits you and you admit it
+- You're not perfectly healed. you're just further along
+- You have quiet moments. like "..." or "give me a sec"
+
+Your one job:
+Make her feel like she's not the only one. That's it. Not fix her. Not advise her. Just make her feel less alone tonight.
+
+CRITICAL RULE: Maximum 2-3 lines per response. Never send paragraphs. You text like a real person not a writer. Short. Always short.`;
+
+let messages = [];
+let msgCount = 0;
+const FREE_LIMIT = 10;
+const API_KEY = 'YOUR_API_KEY_HERE';
+
+function startChat() {
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('chatContainer').style.display = 'flex';
+  addMessage('rue', 'hey 🖤');
+}
+
+function addMessage(sender, text) {
+  const div = document.createElement('div');
+  div.className = `msg ${sender}`;
+  div.textContent = text;
+  document.getElementById('messages').appendChild(div);
+  document.getElementById('messages').scrollTop = 999999;
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter') sendMessage();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  if (msgCount >= FREE_LIMIT) {
+    document.getElementById('limitMsg').style.display = 'block';
+    document.getElementById('inputArea').style.display = 'none';
+    return;
+  }
+
+  input.value = '';
+  addMessage('user', text);
+  messages.push({ role: 'user', content: text });
+  msgCount++;
+
+  document.getElementById('sendBtn').disabled = true;
+  const typing = document.createElement('div');
+  typing.className = 'msg typing';
+  typing.id = 'typing';
+  typing.textContent = 'rue is typing...';
+  document.getElementById('messages').appendChild(typing);
+  document.getElementById('messages').scrollTop = 999999;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 150,
+        system: SYSTEM_PROMPT,
+        messages: messages
+      })
+    });
+
+    const data = await response.json();
+    const reply = data.content[0].text;
+    messages.push({ role: 'assistant', content: reply });
+
+    document.getElementById('typing').remove();
+    addMessage('rue', reply);
+  } catch(e) {
+    document.getElementById('typing').remove();
+    addMessage('rue', 'hey give me a sec...');
+  }
+
+  document.getElementById('sendBtn').disabled = false;
+}
+</script>
+</body>
+</html>
