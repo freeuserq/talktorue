@@ -12,7 +12,17 @@
     --crimson: #8b1a1a; --crimson-light: #c0392b; --crimson-glow: rgba(139,26,26,0.15);
     --text: #d4c4c4; --muted: #6b5555; --white: #f0e8e8;
   }
-  body { background: var(--black); color: var(--text); font-family: 'DM Sans', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  body { 
+  background: var(--black); 
+  color: var(--text); 
+  font-family: 'DM Sans', sans-serif; 
+  height: 100dvh; /* Changed from 100vh */
+  overflow: hidden; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+}
   #landing { text-align: center; padding: 40px 30px; animation: fadeUp 1s ease forwards; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   .landing-name { font-family: 'Playfair Display', serif; font-size: clamp(3rem,10vw,6rem); color: var(--crimson-light); letter-spacing: -1px; line-height: 1; margin-bottom: 12px; }
@@ -23,7 +33,14 @@
   #startBtn:hover::before { transform: scaleX(1); }
   #startBtn:hover { color: var(--white); }
   .brand-tag { margin-top: 60px; color: var(--muted); font-size: 0.7rem; letter-spacing: 2px; opacity: 0.4; text-transform: uppercase; }
-  #chatContainer { display: none; flex-direction: column; width: 100%; max-width: 580px; height: 100vh; padding: 0 16px 16px; }
+  #chatContainer #chatContainer { 
+  display: none; 
+  flex-direction: column; 
+  width: 100%; 
+  max-width: 580px; 
+  height: 100dvh; 
+  padding: 0 16px 24px; /* The 24px at the end adds that bottom "breathing room" */
+}
   #chatHeader { text-align: center; padding: 20px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
   #chatHeader h2 { font-family: 'Playfair Display', serif; color: var(--crimson-light); font-size: 1.4rem; font-weight: 400; letter-spacing: 1px; }
   #chatHeader p { color: var(--muted); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 3px; }
