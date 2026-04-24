@@ -74,19 +74,27 @@
 <script>
 const FREE_LIMIT = 10;
 
-// 1. Initial Load: Pull from the browser's memory
+// 1. Initial Load: Pull from memory
 let messages = JSON.parse(localStorage.getItem('rue_history')) || [];
 let msgCount = parseInt(localStorage.getItem('rue_count')) || 0;
+let lastDate = localStorage.getItem('rue_date');
 
-// This runs as soon as the screen is ready
+const today = new Date().toDateString(); 
+
+// Reset count if it's a brand new day
+if (lastDate !== today) {
+    msgCount = 0;
+    localStorage.setItem('rue_count', '0');
+    localStorage.setItem('rue_date', today);
+}
+
 window.onload = () => {
-    // If they were already in a chat, skip the landing page
     if (messages.length > 0) {
         document.getElementById('landing').style.display = 'none';
         document.getElementById('chatContainer').style.display = 'flex';
         renderHistory();
     }
-    checkLimit(); // Lock the paywall if they've already used their 10 messages
+    checkLimit();
 };
 
 function renderHistory() {
@@ -113,6 +121,7 @@ function startChat() {
 function saveData() {
     localStorage.setItem('rue_history', JSON.stringify(messages));
     localStorage.setItem('rue_count', msgCount.toString());
+    localStorage.setItem('rue_date', new Date().toDateString());
 }
 
 function checkLimit() {
