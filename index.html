@@ -73,66 +73,110 @@
 </div>
 <script>
 const FREE_LIMIT = 10;
-let messages = [];
-let msgCount = 0;
+
+// 1. Initial Load: Pull from the browser's memory
+let messages = JSON.parse(localStorage.getItem('rue_history')) || [];
+let msgCount = parseInt(localStorage.getItem('rue_count')) || 0;
+
+// This runs as soon as the screen is ready
+window.onload = () => {
+    // If they were already in a chat, skip the landing page
+    if (messages.length > 0) {
+        document.getElementById('landing').style.display = 'none';
+        document.getElementById('chatContainer').style.display = 'flex';
+        renderHistory();
+    }
+    checkLimit(); // Lock the paywall if they've already used their 10 messages
+};
+
+function renderHistory() {
+    const container = document.getElementById('messages');
+    container.innerHTML = ''; // Clear and rebuild
+    messages.forEach(m => {
+        if (m.role !== 'system') addMessage(m.role === 'user' ? 'user' : 'rue', m.content);
+    });
+}
 
 function startChat() {
-  document.getElementById('landing').style.display = 'none';
-  document.getElementById('chatContainer').style.display = 'flex';
-  addMessage('rue', 'hey 🖤');
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('chatContainer').style.display = 'flex';
+    
+    // If it's a brand new user, give them the first greeting
+    if (messages.length === 0) {
+        const greeting = 'hey 🖤';
+        addMessage('rue', greeting);
+        messages.push({ role: 'assistant', content: greeting });
+        saveData();
+    }
+}
+
+function saveData() {
+    localStorage.setItem('rue_history', JSON.stringify(messages));
+    localStorage.setItem('rue_count', msgCount.toString());
+}
+
+function checkLimit() {
+    if (msgCount >= FREE_LIMIT) {
+        document.getElementById('limitMsg').style.display = 'block';
+        document.getElementById('inputArea').style.display = 'none';
+        return true;
+    }
+    return false;
 }
 
 function addMessage(sender, text) {
-  const div = document.createElement('div');
-  div.className = 'msg ' + sender;
-  div.textContent = text;
-  document.getElementById('messages').appendChild(div);
-  document.getElementById('messages').scrollTop = 99999;
+    const div = document.createElement('div');
+    div.className = 'msg ' + sender;
+    div.textContent = text;
+    document.getElementById('messages').appendChild(div);
+    document.getElementById('messages').scrollTop = 99999;
 }
 
 function handleKey(e) { if (e.key === 'Enter') sendMessage(); }
 
 async function sendMessage() {
-  const input = document.getElementById('userInput');
-  const text = input.value.trim();
-  if (!text) return;
+    const input = document.getElementById('userInput');
+    const text = input.value.trim();
+    if (!text || checkLimit()) return;
 
-  if (msgCount >= FREE_LIMIT) {
-    document.getElementById('limitMsg').style.display = 'block';
-    document.getElementById('inputArea').style.display = 'none';
-    return;
-  }
+    // UI Updates
+    input.value = '';
+    addMessage('user', text);
+    
+    // Logic Updates
+    messages.push({ role: 'user', content: text });
+    msgCount++;
+    saveData();
 
-  input.value = '';
-  addMessage('user', text);
-  messages.push({ role: 'user', content: text });
-  msgCount++;
+    document.getElementById('sendBtn').disabled = true;
 
-  document.getElementById('sendBtn').disabled = true;
+    const typing = document.createElement('div');
+    typing.className = 'msg typing';
+    typing.id = 'typing';
+    typing.textContent = 'rue is typing...';
+    document.getElementById('messages').appendChild(typing);
+    document.getElementById('messages').scrollTop = 99999;
 
-  const typing = document.createElement('div');
-  typing.className = 'msg typing';
-  typing.id = 'typing';
-  typing.textContent = 'rue is typing...';
-  document.getElementById('messages').appendChild(typing);
-  document.getElementById('messages').scrollTop = 99999;
-
-  try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages })
-    });
-    const data = await response.json();
-    messages.push({ role: 'assistant', content: data.reply });
-    document.getElementById('typing').remove();
-    addMessage('rue', data.reply);
-  } catch(e) {
-    document.getElementById('typing').remove();
-    addMessage('rue', 'give me a sec...');
-  }
-
-  document.getElementById('sendBtn').disabled = false;
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages })
+        });
+        const data = await response.json();
+        
+        document.getElementById('typing').remove();
+        addMessage('rue', data.reply);
+        
+        messages.push({ role: 'assistant', content: data.reply });
+        saveData();
+        checkLimit(); // Check if that was the 10th message
+        
+    } catch(e) {
+        document.getElementById('typing').remove();
+        addMessage('rue', 'give me a sec...');
+    }
+    document.getElementById('sendBtn').disabled = false;
 }
 </script>
 </body>
