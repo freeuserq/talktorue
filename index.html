@@ -63,6 +63,45 @@
   #sendBtn:disabled { background: var(--border); cursor: not-allowed; transform: none; }
   #limitMsg { display: none; text-align: center; color: var(--muted); font-size: 0.82rem; font-style: italic; padding: 12px; border-top: 1px solid var(--border); }
   .limit-link { color: var(--crimson-light); text-decoration: none; display: block; margin-top: 8px; font-style: normal; font-size: 0.8rem; letter-spacing: 1px; }
+ .footer-links {
+  margin-top: 40px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.footer-links a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover { 
+  color: var(--crimson-light); 
+}
+
+#legal-sections {
+  margin-top: 60px;
+  max-width: 500px;
+  text-align: left;
+  padding: 20px;
+  border-top: 1px solid var(--border);
+  opacity: 0.4;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  /* Ensures it scrolls if content is long on small screens */
+  overflow-y: auto; 
+}
+
+#legal-sections h3 {
+  color: var(--muted);
+  margin: 20px 0 10px;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
 </style>
 </head>
 <body>
@@ -71,7 +110,23 @@
   <p class="landing-tagline">she's been through it</p>
   <p class="landing-sub">she gets it.</p>
   <button id="startBtn" onclick="startChat()">talk to her</button>
-  <p class="brand-tag">heartless dreams</p>
+<p class="brand-tag">heartless dreams</p>
+<div class="footer-links">
+  <a href="#about">About</a>
+  <a href="#terms">Terms & Refunds</a>
+  <a href="mailto:your-rue.support@gmail.com">Contact Support</a>
+</div>
+
+<div id="legal-sections">
+  <section id="about">
+    <h3>About Rue</h3>
+    <p>Rue is an AI-powered companion designed for empathetic conversation and emotional support. By using Rue, you acknowledge that she is an artificial intelligence and not a licensed therapist or medical professional.</p>
+  </section>
+  
+  <section id="terms">
+    <h3>Terms & Refund Policy</h3>
+    <p>Subscriptions are billed monthly at $2.99. Due to the high costs of AI generation, we do not offer refunds once the "Unlimited" service has been accessed. You may cancel your subscription at any time via your account dashboard.</p>
+  </section>
 </div>
 <div id="chatContainer">
   <div id="chatHeader">
