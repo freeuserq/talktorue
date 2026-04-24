@@ -110,23 +110,27 @@
   <p class="landing-tagline">she's been through it</p>
   <p class="landing-sub">she gets it.</p>
   <button id="startBtn" onclick="startChat()">talk to her</button>
-<p class="brand-tag">heartless dreams</p>
-<div class="footer-links">
-  <a href="#about">About</a>
-  <a href="#terms">Terms & Refunds</a>
-<a href="mailto:rue.support@gmail.com">Contact Support</a></div>
+  <p class="brand-tag">heartless dreams</p>
 
-<div id="legal-sections">
-  <section id="about">
-    <h3>About Rue</h3>
-    <p>Rue is an AI-powered companion designed for empathetic conversation and emotional support. By using Rue, you acknowledge that she is an artificial intelligence and not a licensed therapist or medical professional.</p>
-  </section>
-  
-  <section id="terms">
-    <h3>Terms & Refund Policy</h3>
-    <p>Subscriptions are billed monthly at $2.99. Due to the high costs of AI generation, we do not offer refunds once the "Unlimited" service has been accessed. You may cancel your subscription at any time via your account dashboard.</p>
-  </section>
+  <div class="footer-links">
+    <a href="#about">About</a>
+    <a href="#terms">Terms & Refunds</a>
+    <a href="mailto:rue.support@gmail.com">Contact Support</a>
+  </div>
+
+  <div id="legal-sections">
+    <section id="about">
+      <h3>About Rue</h3>
+      <p>Rue is an AI-powered companion designed for empathetic conversation and emotional support. By using Rue, you acknowledge that she is an artificial intelligence and not a licensed therapist or medical professional.</p>
+    </section>
+    
+    <section id="terms">
+      <h3>Terms & Refund Policy</h3>
+      <p>Subscriptions are billed monthly at $2.99. Due to the high costs of AI generation, we do not offer refunds once the "Unlimited" service has been accessed. You may cancel your subscription at any time via your account dashboard.</p>
+    </section>
+  </div>
 </div>
+
 <div id="chatContainer">
   <div id="chatHeader">
     <h2><span class="status-dot"></span>rue</h2>
@@ -141,7 +145,6 @@
     <input id="userInput" type="text" placeholder="say something..." onkeypress="handleKey(event)" />
     <button id="sendBtn" onclick="sendMessage()">↑</button>
   </div>
-</div>
 <script>
 const FREE_LIMIT = 50;
 
