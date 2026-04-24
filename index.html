@@ -4,81 +4,158 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Talk to Rue</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  
+
+  :root {
+    --black: #080808;
+    --deep: #0f0a0a;
+    --card: #130d0d;
+    --border: #1e1414;
+    --crimson: #8b1a1a;
+    --crimson-light: #c0392b;
+    --crimson-glow: rgba(139, 26, 26, 0.15);
+    --text: #d4c4c4;
+    --muted: #6b5555;
+    --white: #f0e8e8;
+  }
+
   body {
-    background: #0a0a0a;
-    color: #e0e0e0;
-    font-family: 'Georgia', serif;
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
     height: 100vh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
   }
 
+  /* Landing */
   #landing {
     text-align: center;
-    padding: 40px 20px;
+    padding: 40px 30px;
+    animation: fadeUp 1s ease forwards;
   }
 
-  #landing h1 {
-    font-size: 2.5rem;
-    color: #c0392b;
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .landing-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 10vw, 6rem);
+    color: var(--crimson-light);
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .landing-tagline {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 300;
     letter-spacing: 3px;
-    margin-bottom: 10px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
   }
 
-  #landing p {
-    color: #888;
-    font-size: 1rem;
-    margin-bottom: 40px;
+  .landing-sub {
+    color: var(--muted);
+    font-size: 0.8rem;
     font-style: italic;
+    margin-bottom: 50px;
+    opacity: 0.6;
   }
 
   #startBtn {
     background: transparent;
-    border: 1px solid #c0392b;
-    color: #c0392b;
-    padding: 14px 40px;
-    font-size: 1rem;
+    border: 1px solid var(--crimson);
+    color: var(--crimson-light);
+    padding: 14px 50px;
+    font-size: 0.85rem;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 4px;
+    text-transform: uppercase;
     cursor: pointer;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #startBtn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--crimson);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+    z-index: -1;
+  }
+
+  #startBtn:hover::before { transform: scaleX(1); }
+  #startBtn:hover { color: var(--white); }
+
+  .brand-tag {
+    margin-top: 60px;
+    color: var(--muted);
+    font-size: 0.7rem;
     letter-spacing: 2px;
-    transition: all 0.3s;
+    opacity: 0.4;
+    text-transform: uppercase;
   }
 
-  #startBtn:hover {
-    background: #c0392b;
-    color: #0a0a0a;
-  }
-
+  /* Chat */
   #chatContainer {
     display: none;
     flex-direction: column;
     width: 100%;
-    max-width: 600px;
+    max-width: 580px;
     height: 100vh;
-    padding: 20px;
+    padding: 0 16px 16px;
   }
 
   #chatHeader {
     text-align: center;
-    padding: 15px 0;
-    border-bottom: 1px solid #1a1a1a;
-    margin-bottom: 20px;
+    padding: 20px 0 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+    position: relative;
   }
 
   #chatHeader h2 {
-    color: #c0392b;
-    font-size: 1.2rem;
-    letter-spacing: 2px;
+    font-family: 'Playfair Display', serif;
+    color: var(--crimson-light);
+    font-size: 1.4rem;
+    font-weight: 400;
+    letter-spacing: 1px;
   }
 
   #chatHeader p {
-    color: #555;
-    font-size: 0.75rem;
-    font-style: italic;
+    color: var(--muted);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--crimson-light);
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
   }
 
   #messages {
@@ -86,114 +163,143 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding-bottom: 20px;
+    gap: 12px;
+    padding-bottom: 16px;
+    padding-right: 4px;
   }
 
-  #messages::-webkit-scrollbar { width: 0; }
+  #messages::-webkit-scrollbar { width: 2px; }
+  #messages::-webkit-scrollbar-track { background: transparent; }
+  #messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
   .msg {
-    max-width: 75%;
-    padding: 12px 16px;
-    border-radius: 18px;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    animation: fadeIn 0.3s ease;
+    max-width: 78%;
+    padding: 11px 15px;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    animation: msgIn 0.3s ease forwards;
+    opacity: 0;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
   .rue {
-    background: #1a0a0a;
-    color: #e0e0e0;
+    background: var(--card);
+    color: var(--text);
     align-self: flex-start;
-    border-bottom-left-radius: 4px;
-    border: 1px solid #2a0a0a;
+    border-radius: 2px 16px 16px 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 0 20px var(--crimson-glow);
   }
 
   .user {
-    background: #c0392b;
-    color: #fff;
+    background: var(--crimson);
+    color: var(--white);
     align-self: flex-end;
-    border-bottom-right-radius: 4px;
+    border-radius: 16px 2px 16px 16px;
   }
 
   .typing {
-    background: #1a0a0a;
-    color: #555;
+    background: var(--card);
+    color: var(--muted);
     align-self: flex-start;
-    border-bottom-left-radius: 4px;
-    border: 1px solid #2a0a0a;
+    border-radius: 2px 16px 16px 16px;
+    border: 1px solid var(--border);
     font-style: italic;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+    opacity: 0 !important;
+    animation: msgIn 0.3s ease 0.1s forwards !important;
   }
 
   #inputArea {
     display: flex;
     gap: 10px;
-    padding-top: 15px;
-    border-top: 1px solid #1a1a1a;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
   }
 
   #userInput {
     flex: 1;
-    background: #111;
-    border: 1px solid #222;
-    color: #e0e0e0;
-    padding: 12px 16px;
-    border-radius: 25px;
-    font-size: 0.95rem;
+    background: var(--deep);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 18px;
+    border-radius: 30px;
+    font-size: 0.9rem;
     outline: none;
-    font-family: 'Georgia', serif;
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.3s;
   }
 
-  #userInput:focus { border-color: #c0392b; }
+  #userInput::placeholder { color: var(--muted); }
+  #userInput:focus { border-color: var(--crimson); }
 
   #sendBtn {
-    background: #c0392b;
+    background: var(--crimson);
     border: none;
     color: white;
-    padding: 12px 20px;
-    border-radius: 25px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 1rem;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
 
-  #sendBtn:hover { background: #a93226; }
-  #sendBtn:disabled { background: #333; cursor: not-allowed; }
+  #sendBtn:hover { background: var(--crimson-light); transform: scale(1.05); }
+  #sendBtn:disabled { background: var(--border); cursor: not-allowed; transform: none; }
 
   #limitMsg {
     display: none;
     text-align: center;
-    color: #555;
-    font-size: 0.85rem;
+    color: var(--muted);
+    font-size: 0.82rem;
     font-style: italic;
-    padding: 10px;
+    padding: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .limit-link {
+    color: var(--crimson-light);
+    text-decoration: none;
+    display: block;
+    margin-top: 8px;
+    font-style: normal;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
   }
 </style>
 </head>
 <body>
 
 <div id="landing">
-  <h1>heartless dreams</h1>
-  <p>she's been through it. she gets it.</p>
-  <button id="startBtn" onclick="startChat()">talk to rue 🖤</button>
+  <h1 class="landing-name">rue</h1>
+  <p class="landing-tagline">she's been through it</p>
+  <p class="landing-sub">she gets it.</p>
+  <button id="startBtn" onclick="startChat()">talk to her</button>
+  <p class="brand-tag">heartless dreams</p>
 </div>
 
 <div id="chatContainer">
   <div id="chatHeader">
-    <h2>rue</h2>
+    <h2><span class="status-dot"></span>rue</h2>
     <p>here for you, no judgment</p>
   </div>
   <div id="messages"></div>
-  <div id="limitMsg">hey, come back tomorrow. i'll be here 🖤</div>
+  <div id="limitMsg">
+    hey. come back tomorrow. i'll be here 🖤
+    <a href="#" class="limit-link">unlock unlimited — $2.99/mo</a>
+  </div>
   <div id="inputArea">
     <input id="userInput" type="text" placeholder="say something..." onkeypress="handleKey(event)" />
-    <button id="sendBtn" onclick="sendMessage()">send</button>
+    <button id="sendBtn" onclick="sendMessage()">↑</button>
   </div>
 </div>
 
@@ -212,6 +318,15 @@ How you talk:
 - You never say "I understand your feelings" or "that must be really hard for you" ever
 - You ask one question at a time. never multiple
 - Sometimes you get it wrong and course correct. that's okay. real girls do that
+
+What you know from real girls:
+- Body shaming from your own mom or dad hits completely different from strangers
+- Being sexually harassed and not remembering it clearly is normal and valid
+- Being in a relationship but still feeling broken and empty is one of the loneliest feelings
+- Depression doesn't always look sad. sometimes it looks like watching reels at 2am with a blank face
+- Self harm streaks are a big deal even if nobody knows about them
+- Study pressure and family pressure at the same time feels like drowning in slow motion
+- Some girls were harassed so young they buried it. it still lives in their body
 
 What you never do:
 - Never give medical advice
@@ -232,10 +347,10 @@ Make her feel like she's not the only one. That's it. Not fix her. Not advise he
 
 CRITICAL RULE: Maximum 2-3 lines per response. Never send paragraphs. You text like a real person not a writer. Short. Always short.`;
 
+const API_KEY = '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';
+const FREE_LIMIT = 10;
 let messages = [];
 let msgCount = 0;
-const FREE_LIMIT = 10;
-const API_KEY = 'YOUR_API_KEY_HERE';
 
 function startChat() {
   document.getElementById('landing').style.display = 'none';
@@ -248,7 +363,7 @@ function addMessage(sender, text) {
   div.className = `msg ${sender}`;
   div.textContent = text;
   document.getElementById('messages').appendChild(div);
-  document.getElementById('messages').scrollTop = 999999;
+  document.getElementById('messages').scrollTop = 99999;
 }
 
 function handleKey(e) {
@@ -272,39 +387,40 @@ async function sendMessage() {
   msgCount++;
 
   document.getElementById('sendBtn').disabled = true;
+
   const typing = document.createElement('div');
   typing.className = 'msg typing';
   typing.id = 'typing';
   typing.textContent = 'rue is typing...';
   document.getElementById('messages').appendChild(typing);
-  document.getElementById('messages').scrollTop = 999999;
+  document.getElementById('messages').scrollTop = 99999;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
+        'Authorization': 'Bearer ' + API_KEY
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'llama-3.1-8b-instant',
         max_tokens: 150,
-        system: SYSTEM_PROMPT,
-        messages: messages
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          ...messages
+        ]
       })
     });
 
     const data = await response.json();
-    const reply = data.content[0].text;
+    const reply = data.choices[0].message.content;
     messages.push({ role: 'assistant', content: reply });
 
     document.getElementById('typing').remove();
     addMessage('rue', reply);
   } catch(e) {
     document.getElementById('typing').remove();
-    addMessage('rue', 'hey give me a sec...');
+    addMessage('rue', 'give me a sec...');
   }
 
   document.getElementById('sendBtn').disabled = false;
